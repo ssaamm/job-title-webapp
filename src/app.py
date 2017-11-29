@@ -1,8 +1,9 @@
 import pickle
-import sys
+import os
 from flask import Flask, jsonify, request
 
-clf_loc, vect_loc = sys.argv[1:3]
+clf_loc = os.getenv('CLFPATH')
+vect_loc = os.getenv('VECTPATH')
 with open(clf_loc, 'rb') as f:
     clf = pickle.load(f)
 with open(vect_loc, 'rb') as f:
@@ -20,9 +21,12 @@ def score():
 
     return jsonify({'score': proba, 'clf': classification})
 
+with open('index.html', 'r') as f:
+    index_html = f.read()
+
 @app.route('/')
 def index():
-    return 'Hello, World!'
+    return index_html
 
 if __name__ == '__main__':
     app.run(debug=True)

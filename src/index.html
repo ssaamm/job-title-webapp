@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Recruiter Repellant 3000</title>
+    <script src="https://unpkg.com/vue"></script>
+  </head>
+  <body>
+    <div id="app">
+      <input v-model="title" placeholder="Job title">
+      <p>This title sounds roughly {{ proba_cool }}% cool</p>
+    </div>
+
+    <script>
+function get(url, callback, errback) {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, true);
+
+  request.onload = function() {
+    if (this.status >= 200 && this.status < 400) {
+      var data = JSON.parse(this.response);
+      callback(data);
+    } else {
+      errback();
+    }
+  };
+
+  request.onerror = function() {
+    errback();
+  };
+
+  request.send();
+}
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    title: "",
+    proba_cool: 10.0
+  },
+  watch: {
+    'title': function(new_val, old_val) {
+      get('score?title=' + this.title, (function(data) {
+        console.log("setting this.proba_cool to" + data['score']);
+        this.proba_cool = new Intl.NumberFormat().format(data['score'] * 100);
+        console.log(this.proba_cool);
+      }).bind(this), function(data) {
+        console.log('error');
+      });
+    }
+  }
+});
+    </script>
+  </body>
+</html>
